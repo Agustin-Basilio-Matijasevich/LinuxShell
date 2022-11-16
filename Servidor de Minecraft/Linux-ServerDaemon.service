@@ -1,0 +1,46 @@
+[Unit]
+Description=Daemon del Servidor de Minecraft
+Requires=Discos-Servicios.mount
+Wants=systemd-journald.service network-online.target
+After=systemd-journald.service network-online.target Discos-Servicios.mount
+StartLimitBurst=3
+StartLimitIntervalSec=10
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+
+User=minecraft-server
+Group=minecraft-server
+
+Nice=1
+
+PrivateUsers=true
+
+ProtectHome=true
+
+ProtectSystem=full
+
+PrivateDevices=true
+
+ProtectKernelTunables=true
+
+ProtectKernelModules=true
+
+ProtectControlGroups=true
+
+WorkingDirectory=/Discos/Servicios/ServerMinecraft/ServerData
+
+ExecStart=/usr/lib/jvm/jdk-19/bin/java -Xmx4G -Xms2G -jar server.jar nogui
+
+ExecReload=/usr/local/bin/mcrcon -H 127.0.0.1 -P 25575 -p 1234 -w 1 "say El Servidor ejecutara una recarga de Chunks en 3..." -w 1 "say 2..." -w 1 "say 1..." -w 1 "say Guardando..." -w 1 save-all -w 1 "say Recargando Chunks..." -w 1 reload
+
+ExecReload=/bin/sh -c '/bin/sleep 5'
+
+ExecStop=/usr/local/bin/mcrcon -H 127.0.0.1 -P 25575 -p 1234 -w 1 "say El Servidor se va a Apagar en..." -w 1 "say 5..." -w 1 "say 4..." -w 1 "say 3..." -w 1 "say 2..." -w 1 "say 1..." -w 1 "say Guardando..." -w 1 save-all -w 1 "say Apagando..." -w 2 stop
+
+ExecStop=/bin/sh -c '/bin/sleep 20'
+
+[Install]
+WantedBy=multi-user.target
